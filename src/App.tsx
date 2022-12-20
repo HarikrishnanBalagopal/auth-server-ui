@@ -1,58 +1,86 @@
-import React from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
-import './App.css';
+import '@patternfly/react-core/dist/styles/base.css';
+import { NavLink, Routes, Route } from 'react-router-dom';
+import { Users } from './features/users/Users';
+import { Roles } from './features/roles/Roles';
+import { ErrorPage } from './error-page';
+import {
+  Page,
+  Masthead,
+  MastheadToggle,
+  MastheadMain,
+  MastheadBrand,
+  MastheadContent,
+  PageSidebar,
+  PageSection,
+  PageToggleButton,
+  Spinner,
+  Avatar,
+  Form,
+  Button,
+} from '@patternfly/react-core';
+import { FunctionComponent } from 'react';
+import { BarsIcon } from '@patternfly/react-icons/dist/esm/icons/bars-icon';
+import { Nav, NavItem, NavList } from '@patternfly/react-core';
+import { useGetUserInfoQuery } from './features/users/usersApi';
+import { Support } from './features/support/Support';
+import img_avatar_url from './assets/images/img_avatar.svg';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
+export const App: FunctionComponent = () => {
+  const { data, isLoading, error } = useGetUserInfoQuery();
+
+  const header = (
+    <Masthead>
+      <MastheadToggle>
+        <PageToggleButton><BarsIcon /></PageToggleButton>
+      </MastheadToggle>
+      <MastheadMain>
+        <MastheadBrand>
+          Auth Server
+        </MastheadBrand>
+      </MastheadMain>
+      <MastheadContent>
+        <span className="margin-left-auto">
+          {
+            error ? (
+              <a href="/auth-server/user-login">Login</a>
+            ) : isLoading ? (
+              <Spinner />
+            ) : data ? (
+              <span className="flex-center-vertical">
+                {data.email}
+                <Avatar src={img_avatar_url} alt='profile picture' />
+                <Form method='POST' action='/auth-server/user-logout'>
+                  <Button type='submit'>Logout</Button>
+                </Form>
+              </span>
+            ) : null
+          }
         </span>
-      </header>
-    </div>
+      </MastheadContent>
+    </Masthead>
+  );
+  const sidebarContent = (
+    <Nav>
+      <NavList>
+        <NavLink to="users">{({ isActive }) => <NavItem isActive={isActive}><span>Users</span></NavItem>}</NavLink>
+        <NavLink to="roles">{({ isActive }) => <NavItem isActive={isActive}><span>Roles</span></NavItem>}</NavLink>
+        <NavLink to="support">{({ isActive }) => <NavItem isActive={isActive}><span>Support</span></NavItem>}</NavLink>
+      </NavList>
+    </Nav>
+  );
+  const sidebar = (<PageSidebar nav={sidebarContent} />);
+  return (
+    <Page isManagedSidebar={true} header={header} sidebar={sidebar}>
+      <PageSection isFilled={true}>
+        <Routes>
+          <Route path='/' element={<Users />} />
+          <Route path='users' element={<Users />} />
+          <Route path='roles' element={<Roles />} />
+          <Route path='support' element={<Support />} />
+          <Route path="*" element={<ErrorPage />} />
+        </Routes>
+      </PageSection>
+      <footer>Footer</footer>
+    </Page>
   );
 }
-
-export default App;
