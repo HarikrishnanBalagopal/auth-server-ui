@@ -80,7 +80,7 @@ export const App: FunctionComponent = () => {
           <Route path="*" element={<ErrorPage />} />
         </Routes>
       </PageSection>
-      <footer>Footer</footer>
+      <footer>Auth Server UI v0.1.0</footer>
     </Page>
   );
 }
