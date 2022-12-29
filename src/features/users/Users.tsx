@@ -48,6 +48,12 @@ export const Users: FunctionComponent = () => {
             editable: true,
         },
         {
+            field: 'num-failed-attempts',
+            headerName: 'num of failed attempts',
+            type: 'number',
+            editable: true,
+        },
+        {
             field: 'created-at',
             headerName: 'created at',
             type: 'dateTime',
